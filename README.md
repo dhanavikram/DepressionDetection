@@ -9,3 +9,16 @@
 * Dayn: assessing correlations between variables, building feature set not associated with gender, criteria for informative feature set
 * Dhanavikram: work on padding CSVs to facilitate CNNs, model optimization (finetuning hyperparameters)
 * Kalyani: trying fully connected networks and CNNs, random forests
+
+
+# Folder Structure
+
+    .
+    ├── data                            # Original data files
+    ├── processed_data                  # Cleaned and transformed data files in csv format
+    ├── models                          # Notebooks separated via models
+    ├── outputs                         # Output images and csv files
+    ├── 00_data_read.ipynb              # Read data and merge different csv files
+    ├── 01_clean_data.ipynb             # Clean data and compute principal components
+    ├── 02_feature_selection.ipynb      # Select features based on correlation and fishers criterion
+    └── README.md
