@@ -62,7 +62,7 @@ def show_conf_matrix(y, target="Gender"):
     plt.rcParams['figure.figsize'] = (6, 6)
     display_c_m = ConfusionMatrixDisplay(conf_matrix)
     display_c_m.plot(cmap='YlOrBr', colorbar=False)
-    plt.title('Confusion Matrix')
+    # plt.title('Confusion Matrix')
     plt.show()
 
 
