@@ -87,7 +87,7 @@ def compute_metrics(y, eo=False):
         return accuracy, bal_accuracy
     
 
-def show_conf_matrix(y, target="Depression"):
+def show_conf_matrix(y, target="Depression", model_name = None):
     # Aggregate target and predicted labels at participant level 
     y_actual = y.groupby("Participant_ID").agg({target:"max"})[target]
     y_pred = y.groupby("Participant_ID").agg(Predicted=(target+'_predicted', lambda x: x.mode()[0]))["Predicted"]
@@ -96,8 +96,11 @@ def show_conf_matrix(y, target="Depression"):
     #Visualizing the confusion matrix
     plt.rcParams['figure.figsize'] = (6, 6)
     display_c_m = ConfusionMatrixDisplay(conf_matrix)
-    display_c_m.plot(cmap='Greens', xticks_rotation=50)
-    plt.title('Confusion Matrix')
+    display_c_m.plot(cmap='YlOrBr', colorbar=False)
+    # title = "Confusion Matrix"
+    # if model_name:
+    #     title = title + " of " + model_name
+    # plt.title(title)
     plt.show()
 
 
