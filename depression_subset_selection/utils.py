@@ -13,7 +13,7 @@ FEATURE_DESC_PATH = "../data/feature_description.csv"
 LABELS_PATH = "../data/labels.csv"
 
 
-def calculate_class_weights(y, target_col='Gender'):
+def calculate_class_weights(y, target_col):
     """
     Calculates class weight to solve class imbalance problem
     """
@@ -28,7 +28,35 @@ def calculate_class_weights(y, target_col='Gender'):
     return class_weights
 
 
-def compute_metrics(y):
+def compute_eo(y):
+    """
+    Computes equality of opportunity for the given result dataframe.
+    The input dataframe should contain:
+    1. Gender label
+    2. Depression label
+    3. Predicted Depression label
+    4. Participant ID
+    """
+    
+    # Aggregate target and predicted labels at participant level for male participants
+    y_male = y[y['Gender'] == 1]
+    y_actual_male = y_male.groupby("Participant_ID").agg({"Depression":"max"})["Depression"]
+    y_pred_male = y_male.groupby("Participant_ID").agg(Predicted=('Depression_predicted', lambda x: x.mode()[0]))["Predicted"]
+    
+    # Aggregate target and predicted labels at participant level for female participants
+    y_female = y[y['Gender'] == 0]
+    y_actual_female = y_female.groupby("Participant_ID").agg({"Depression":"max"})["Depression"]
+    y_pred_female = y_female.groupby("Participant_ID").agg(Predicted=('Depression_predicted', lambda x: x.mode()[0]))["Predicted"]
+
+    # Compute recall/tpr for male and female classification
+    tpr_male = recall_score(y_actual_male, y_pred_male)
+    tpr_female = recall_score(y_actual_female, y_pred_female)
+
+    # Compute Equality of opportunity score
+    return 1-abs(tpr_male-tpr_female)
+
+
+def compute_metrics(y, eo=False):
     """
     Computes accuracy, balanced accuracy and equality of opportunity for the given result dataframe.
     The input dataframe should contain:
@@ -38,8 +66,11 @@ def compute_metrics(y):
     4. Participant ID
     """
     
-    # Sets target as Gender
-    target = "Gender"
+    # Sets target as Depression if eo set to True
+    if eo:
+        target = "Depression"
+    else:
+        target = "Gender"
 
     # Aggregate target and predicted labels at participant level 
     y_actual = y.groupby("Participant_ID").agg({target:"max"})[target]
@@ -49,10 +80,14 @@ def compute_metrics(y):
     accuracy = accuracy_score(y_actual, y_pred)
     bal_accuracy = balanced_accuracy_score(y_actual, y_pred)
 
-    return accuracy, bal_accuracy
+    if eo:
+        eo_score = compute_eo(y)
+        return accuracy, bal_accuracy, eo_score
+    else:
+        return accuracy, bal_accuracy
     
 
-def show_conf_matrix(y, target="Gender"):
+def show_conf_matrix(y, target="Depression", model_name = None):
     # Aggregate target and predicted labels at participant level 
     y_actual = y.groupby("Participant_ID").agg({target:"max"})[target]
     y_pred = y.groupby("Participant_ID").agg(Predicted=(target+'_predicted', lambda x: x.mode()[0]))["Predicted"]
@@ -62,7 +97,10 @@ def show_conf_matrix(y, target="Gender"):
     plt.rcParams['figure.figsize'] = (6, 6)
     display_c_m = ConfusionMatrixDisplay(conf_matrix)
     display_c_m.plot(cmap='YlOrBr', colorbar=False)
-    plt.title('Confusion Matrix')
+    # title = "Confusion Matrix"
+    # if model_name:
+    #     title = title + " of " + model_name
+    # plt.title(title)
     plt.show()
 
 
