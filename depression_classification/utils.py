@@ -28,7 +28,7 @@ def calculate_class_weights(y, target_col):
     return class_weights
 
 
-def compute_eo(y):
+def compute_eo(y, print_metrics = False):
     """
     Computes equality of opportunity for the given result dataframe.
     The input dataframe should contain:
@@ -52,11 +52,16 @@ def compute_eo(y):
     tpr_male = recall_score(y_actual_male, y_pred_male)
     tpr_female = recall_score(y_actual_female, y_pred_female)
 
+    if print_metrics:
+        print("True Positive Rate - Males: ", tpr_male)
+        print("True Positive Rate - Females: ", tpr_female)
+    if tpr_male == 0 and tpr_female == 0:
+        return 0
     # Compute Equality of opportunity score
     return 1-abs(tpr_male-tpr_female)
 
 
-def compute_metrics(y, eo=False):
+def compute_metrics(y, eo=False, print_metrics=False):
     """
     Computes accuracy, balanced accuracy and equality of opportunity for the given result dataframe.
     The input dataframe should contain:
@@ -81,7 +86,7 @@ def compute_metrics(y, eo=False):
     bal_accuracy = balanced_accuracy_score(y_actual, y_pred)
 
     if eo:
-        eo_score = compute_eo(y)
+        eo_score = compute_eo(y, print_metrics)
         return accuracy, bal_accuracy, eo_score
     else:
         return accuracy, bal_accuracy
