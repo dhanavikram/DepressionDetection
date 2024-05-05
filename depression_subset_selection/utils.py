@@ -52,6 +52,8 @@ def compute_eo(y):
     tpr_male = recall_score(y_actual_male, y_pred_male)
     tpr_female = recall_score(y_actual_female, y_pred_female)
 
+    if tpr_male == 0 and tpr_female == 0:
+        return 0
     # Compute Equality of opportunity score
     return 1-abs(tpr_male-tpr_female)
 
