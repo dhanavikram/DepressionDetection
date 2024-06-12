@@ -13,7 +13,7 @@ In this project, we build predictive models of depression and gender. We also ex
 
 ## Detailed Explanation of Methodologies:
 
-This [report](Final Report.pdf) explains the methodologies followed to detect Depression in humans and the filter-based techniques used to evaluate the effect of gender in model performances.
+This [report](<Final Report.pdf>) explains the methodologies followed to detect Depression in humans and the filter-based techniques used to evaluate the effect of gender in model performances.
 
 ## TL;DR
 
@@ -39,3 +39,5 @@ Take a look at this [poster](E-poster.pdf)
 
 
 This work is a part of the CSCI-5622 Class (Spring 2024).
+
+[def]: F
